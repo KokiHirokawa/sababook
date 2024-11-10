@@ -22,7 +22,7 @@ impl HttpClient {
             Ok(ips) => ips,
             Err(e) => {
                 return Err(Error::Network(format!("Failed to find IP addresses: {:#?}", e)))
-            },  
+            },
         };
 
         if ips.len() < 1 {
@@ -45,9 +45,9 @@ impl HttpClient {
         request.push_str("Host: ");
         request.push_str(&host);
         request.push('\n');
-        
+
         request.push_str("Accept: text/html\n");
-        
+
         request.push_str("Connection: close\n");
 
         request.push('\n');
