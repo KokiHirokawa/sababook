@@ -12,6 +12,12 @@ pub struct Window {
     document: Rc<RefCell<Node>>,
 }
 
+impl Default for Window {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Window {
     pub fn new() -> Self {
         let window = Self {
@@ -163,7 +169,7 @@ impl Element {
     }
 
     pub fn kind(&self) -> ElementKind {
-        self.kind.clone()
+        self.kind
     }
 }
 
