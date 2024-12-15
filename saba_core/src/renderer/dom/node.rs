@@ -1,11 +1,13 @@
-use core::str::FromStr;
+use crate::renderer::html::attribute::Attribute;
 use alloc::format;
 use alloc::rc::Rc;
 use alloc::rc::Weak;
 use alloc::string::String;
-use core::cell::RefCell;
-use crate::renderer::html::attribute::Attribute;
 use alloc::vec::Vec;
+use core::cell::RefCell;
+use core::fmt::Display;
+use core::fmt::Formatter;
+use core::str::FromStr;
 
 #[derive(Debug, Clone)]
 pub struct Window {
@@ -163,8 +165,9 @@ pub struct Element {
 impl Element {
     pub fn new(element_name: &str, attributes: Vec<Attribute>) -> Self {
         Self {
-            kind: ElementKind::from_str(element_name).expect("Failed to convert string to ElementKind"),
-            attributes
+            kind: ElementKind::from_str(element_name)
+                .expect("Failed to convert string to ElementKind"),
+            attributes,
         }
     }
 
@@ -211,5 +214,22 @@ impl FromStr for ElementKind {
             "a" => Ok(ElementKind::A),
             _ => Err(format!("unimplemented element name {:?}", s)),
         }
+    }
+}
+
+impl Display for ElementKind {
+    fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
+        let s = match self {
+            ElementKind::Html => "html",
+            ElementKind::Head => "head",
+            ElementKind::Style => "style",
+            ElementKind::Script => "script",
+            ElementKind::Body => "body",
+            ElementKind::H1 => "h1",
+            ElementKind::H2 => "h2",
+            ElementKind::P => "p",
+            ElementKind::A => "a",
+        };
+        write!(f, "{}", s)
     }
 }
