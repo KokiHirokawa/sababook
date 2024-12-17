@@ -174,6 +174,20 @@ impl Element {
     pub fn kind(&self) -> ElementKind {
         self.kind
     }
+
+    pub fn is_block_element(&self) -> bool {
+        match self.kind {
+            ElementKind::Body
+            | ElementKind::H1
+            | ElementKind::H2
+            | ElementKind::P => true,
+            _ => false,
+        }
+    }
+
+    pub fn attributes(&self) -> Vec<Attribute> {
+        self.attributes.clone()
+    }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
