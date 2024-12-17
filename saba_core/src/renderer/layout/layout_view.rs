@@ -169,3 +169,87 @@ fn build_layout_tree(
 
     layout_object
 }
+
+#[cfg(test)]
+mod tests {
+    use alloc::string::{String, ToString};
+    use alloc::vec::Vec;
+    use crate::renderer::css::cssom::CssParser;
+    use crate::renderer::css::token::CssTokenizer;
+    use crate::renderer::dom::api::get_style_content;
+    use crate::renderer::dom::node::ElementKind::Body;
+    use crate::renderer::dom::node::{Element, NodeKind};
+    use crate::renderer::html::parser::HtmlParser;
+    use crate::renderer::html::token::HtmlTokenizer;
+    use crate::renderer::layout::layout_object::LayoutObjectKind;
+    use crate::renderer::layout::layout_view::LayoutView;
+
+    fn create_layout_view(html: String) -> LayoutView {
+        let t = HtmlTokenizer::new(html);
+        let window = HtmlParser::new(t).construct_tree();
+        let dom = window.borrow().document();
+        let style = get_style_content(dom.clone());
+        let css_tokenizer = CssTokenizer::new(style);
+        let cssom = CssParser::new(css_tokenizer).parse_stylesheet();
+        LayoutView::new(dom, &cssom)
+    }
+
+    #[test]
+    fn test_empty() {
+        let layout_view = create_layout_view("".to_string());
+        assert_eq!(None, layout_view.root);
+    }
+
+    #[test]
+    fn test_body() {
+        let html = "<html><head></head><body></body></html>".to_string();
+        let layout_view = create_layout_view(html);
+
+        let root = layout_view.root;
+        assert!(root.is_some());
+        assert_eq!(
+            LayoutObjectKind::Block,
+            root.clone().expect("root should exist").borrow().kind()
+        );
+        assert_eq!(
+            NodeKind::Element(Element::new("body", Vec::new())),
+            root.clone().expect("root should exist").borrow().node_kind()
+        );
+    }
+
+    #[test]
+    fn test_text() {
+        let html = "<html><head></head><body>text</body></html>".to_string();
+        let layout_view = create_layout_view(html);
+
+        let root = layout_view.root;
+        assert!(root.is_some());
+        assert_eq!(
+            LayoutObjectKind::Block,
+            root.clone().expect("root should exist").borrow().kind()
+        );
+        assert_eq!(
+            NodeKind::Element(Element::new("body", Vec::new())),
+            root.clone().expect("root should exist").borrow().node_kind()
+        );
+
+        let text = root.expect("root should exist").borrow().first_child();
+        assert!(text.is_some());
+        assert_eq!(
+            LayoutObjectKind::Text,
+            text.clone().expect("text should exist").borrow().kind()
+        );
+        assert_eq!(
+            NodeKind::Text("text".to_string()),
+            text.clone().expect("text should exist").borrow().node_kind()
+        );
+    }
+
+    #[test]
+    fn test_display_none() {
+        let html = "<html><head><style>body{display:none;}</style></head><body>text</body></html>".to_string();
+        let layout_view = create_layout_view(html);
+
+        assert_eq!(None, layout_view.root);
+    }
+}
