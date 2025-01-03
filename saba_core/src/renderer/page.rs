@@ -1,8 +1,6 @@
-use crate::alloc::string::ToString;
 use crate::http::HttpResponse;
 use crate::renderer::html::parser::HtmlParser;
 use crate::renderer::html::token::HtmlTokenizer;
-use crate::utils::convert_dom_to_string;
 use crate::browser::Browser;
 use crate::renderer::dom::node::Window;
 use alloc::rc::Rc;
@@ -14,7 +12,6 @@ use crate::display_item::DisplayItem;
 use crate::renderer::css::cssom::{CssParser, StyleSheet};
 use crate::renderer::css::token::CssTokenizer;
 use crate::renderer::dom::api::get_style_content;
-use crate::renderer::layout::layout_object::create_layout_object;
 use crate::renderer::layout::layout_view::LayoutView;
 
 #[derive(Debug, Clone)]

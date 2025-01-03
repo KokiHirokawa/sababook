@@ -3,10 +3,13 @@
 
 extern crate alloc;
 
+use alloc::rc::Rc;
+use core::cell::RefCell;
 use crate::alloc::string::ToString;
 use noli::*;
 use saba_core::browser::Browser;
 use saba_core::http::HttpResponse;
+use ui_wasabi::app::WasabiUI;
 
 static TEST_HTTP_RESPONSE: &str = r#"HTTP/1.1 200 OK
 Data: xx xx xx
@@ -29,9 +32,15 @@ Data: xx xx xx
 fn main() -> u64 {
     let browser = Browser::new();
 
-    let response = HttpResponse::new(TEST_HTTP_RESPONSE.to_string()).expect("failed to parse http response");
-    let page = browser.borrow().current_page();
-    page.borrow_mut().receive_response(response);
+    let ui = Rc::new(RefCell::new(WasabiUI::new(browser)));
+
+    match ui.borrow_mut().start() {
+        Ok(_) => {}
+        Err(e) => {
+            println!("browser fails to start {:?}", e);
+            return 1;
+        }
+    };
 
     0
 }

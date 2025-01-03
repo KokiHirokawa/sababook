@@ -2,14 +2,12 @@ use alloc::rc::{Rc, Weak};
 use alloc::string::{String, ToString};
 use alloc::vec;
 use alloc::vec::Vec;
-use core::alloc::Layout;
 use core::cell::RefCell;
 use crate::constants::{CHAR_HEIGHT_WITH_PADDING, CHAR_WIDTH, CONTENT_AREA_WIDTH, WINDOW_PADDING, WINDOW_WIDTH};
 use crate::display_item::DisplayItem;
 use crate::renderer::css::cssom::{ComponentValue, Declaration, Selector, StyleSheet};
 use crate::renderer::dom::node::{Node, NodeKind};
 use crate::renderer::layout::computed_style::{Color, ComputedStyle, DisplayType, FontSize};
-use crate::renderer::layout::computed_style::DisplayType::DisplayNone;
 
 pub fn create_layout_object(
     node: &Option<Rc<RefCell<Node>>>,
