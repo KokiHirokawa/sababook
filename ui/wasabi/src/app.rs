@@ -12,6 +12,7 @@ use noli::window::{StringSize, Window};
 use saba_core::browser::Browser;
 use saba_core::constants::{ADDRESSBAR_HEIGHT, BLACK, DARKGRAY, GREY, LIGHTGRAY, TITLE_BAR_HEIGHT, TOOLBAR_HEIGHT, WHITE, WINDOW_HEIGHT, WINDOW_INIT_X_POS, WINDOW_INIT_Y_POS, WINDOW_WIDTH};
 use saba_core::error::Error;
+use crate::cursor::Cursor;
 
 #[derive(Debug)]
 pub struct WasabiUI {
@@ -19,6 +20,7 @@ pub struct WasabiUI {
     input_url: String,
     input_mode: InputMode,
     window: Window,
+    cursor: Cursor,
 }
 
 impl WasabiUI {
@@ -35,7 +37,8 @@ impl WasabiUI {
                 WINDOW_WIDTH,
                 WINDOW_HEIGHT,
             )
-                .unwrap()
+                .unwrap(),
+            cursor: Cursor::new(),
         }
     }
 }
@@ -96,6 +99,11 @@ impl WasabiUI {
                 position,
             }
         ) = Api::get_mouse_cursor_info() {
+            self.window.flush_area(self.cursor.rect());
+            self.cursor.set_position(position.x, position.y);
+            self.window.flush_area(self.cursor.rect());
+            self.cursor.flush();
+
             if button.l() || button.c() || button.r() {
                 let relative_pos = (
                     position.x - WINDOW_INIT_X_POS,
